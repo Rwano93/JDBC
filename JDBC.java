@@ -37,20 +37,23 @@ public class JDBC {
                     String nom = sc.nextLine();
                     System.out.println("Veuillez saisir le prénom de l'utilisateur :");
                     String prenom = sc.nextLine();
+                    System.out.println("Veuillez saisir le metier de l'utilisateur :");
+                    String metier = sc.nextLine();
                     System.out.println("Veuillez saisir l'email de l'utilisateur :");
                     String email = sc.nextLine();
                     System.out.println("Veuillez saisir le mot de passe de l'utilisateur :");
                     String mdp = sc.nextLine();
 
                     // Requête SQL d'insertion
-                    String requeteInsert = "INSERT INTO Utilisateur (nom, prenom, email, mdp, actif) VALUES (?, ?, ?, ?, ?)";
+                    String requeteInsert = "INSERT INTO Utilisateur (nom, prenom, metier, email, mdp, actif) VALUES (?, ?, ?, ?, ?, ?)";
                     PreparedStatement requetePrepareInsert = maConnection.prepareStatement(requeteInsert, PreparedStatement.RETURN_GENERATED_KEYS);
 
                     requetePrepareInsert.setString(1, nom);
                     requetePrepareInsert.setString(2, prenom);
-                    requetePrepareInsert.setString(3, email);
-                    requetePrepareInsert.setString(4, mdp);
-                    requetePrepareInsert.setBoolean(5, true);
+                    requetePrepareInsert.setString(3, metier);
+                    requetePrepareInsert.setString(4, email);
+                    requetePrepareInsert.setString(5, mdp);
+                    requetePrepareInsert.setBoolean(6, true);
 
                     requetePrepareInsert.executeUpdate();
                     ResultSet generatedKeys = requetePrepareInsert.getGeneratedKeys();
@@ -87,6 +90,7 @@ public class JDBC {
                         System.out.println(resultatAllUsers.getInt("id_user"));
                         System.out.println(resultatAllUsers.getString("nom"));
                         System.out.println(resultatAllUsers.getString("prenom"));
+                        System.out.println(resultatAllUsers.getString("metier"));
                         System.out.println(resultatAllUsers.getString("email"));
                         System.out.println(resultatAllUsers.getString("mdp"));
                         System.out.println(resultatAllUsers.getBoolean("actif"));
@@ -112,6 +116,7 @@ public class JDBC {
                             System.out.println(resultat.getInt("id_user"));
                             System.out.println(resultat.getString("nom"));
                             System.out.println(resultat.getString("prenom"));
+                            System.out.println(resultat.getString("metier"));
                             System.out.println(resultat.getString("email"));
                             System.out.println(resultat.getString("mdp"));
                             System.out.println(resultat.getBoolean("actif"));
@@ -122,7 +127,7 @@ public class JDBC {
                         System.out.println("Voulez-vous afficher un autre utilisateur ? (oui/non)");
                         String reponseAfficher = sc.nextLine();
 
-                        if (reponseAfficher.equalsIgnoreCase("non")) {
+                        if (reponseAfficher.equalsIgnoreCase("oui")) {
                             System.out.println("Au revoir !");
                             break;
                         }
@@ -140,6 +145,7 @@ public class JDBC {
                         System.out.println(resultatAll.getInt("id_user"));
                         System.out.println(resultatAll.getString("nom"));
                         System.out.println(resultatAll.getString("prenom"));
+                        System.out.println(resultatAll.getString("metier"));
                         System.out.println(resultatAll.getString("email"));
                         System.out.println(resultatAll.getString("mdp"));
                         System.out.println(resultatAll.getBoolean("actif"));
@@ -157,13 +163,15 @@ public class JDBC {
                     requetePrepareUpdate.setString(1, sc.nextLine());
                     System.out.println("Veuillez saisir le nouveau prénom");
                     requetePrepareUpdate.setString(2, sc.nextLine());
-                    System.out.println("Veuillez saisir le nouvel email");
+                    System.out.println("Veuillez saisir le nouveau metier");
                     requetePrepareUpdate.setString(3, sc.nextLine());
-                    System.out.println("Veuillez saisir le nouveau mot de passe");
+                    System.out.println("Veuillez saisir le nouvel email");
                     requetePrepareUpdate.setString(4, sc.nextLine());
+                    System.out.println("Veuillez saisir le nouveau mot de passe");
+                    requetePrepareUpdate.setString(5, sc.nextLine());
                     System.out.println("Veuillez saisir la nouvelle valeur d'activation (true/false)");
-                    requetePrepareUpdate.setBoolean(5, sc.nextBoolean());
-                    requetePrepareUpdate.setInt(6, id_user);
+                    requetePrepareUpdate.setBoolean(6, sc.nextBoolean());
+                    requetePrepareUpdate.setInt(7, id_user);
 
                     requetePrepareUpdate.executeUpdate();
 
@@ -181,6 +189,7 @@ public class JDBC {
                         System.out.println(resultatAllDelete.getInt("id_user"));
                         System.out.println(resultatAllDelete.getString("nom"));
                         System.out.println(resultatAllDelete.getString("prenom"));
+                        System.out.println(resultatAllDelete.getString("metier"));
                         System.out.println(resultatAllDelete.getString("email"));
                         System.out.println(resultatAllDelete.getString("mdp"));
                         System.out.println(resultatAllDelete.getBoolean("actif"));
@@ -215,6 +224,7 @@ public class JDBC {
                         System.out.println(resultatAllUtilisateur.getInt("id_user"));
                         System.out.println(resultatAllUtilisateur.getString("nom"));
                         System.out.println(resultatAllUtilisateur.getString("prenom"));
+                        System.out.println(resultatAllUtilisateur.getString("metier"));
                         System.out.println(resultatAllUtilisateur.getString("email"));
                         System.out.println(resultatAllUtilisateur.getString("mdp"));
                         System.out.println(resultatAllUtilisateur.getBoolean("actif"));
@@ -223,7 +233,7 @@ public class JDBC {
                     System.out.println("Voulez-vous activer / désactiver un utilisateur ? (oui/non)");
                     String reponseUtilisateur = sc.nextLine();
 
-                    if (reponseUtilisateur.equalsIgnoreCase("oui")) {
+                    if (reponseUtilisateur.equalsIgnoreCase("non")) {
                         System.out.println("Veuillez saisir l'id de l'utilisateur que vous voulez activer / désactiver");
                         int idUtilisateur = sc.nextInt();
                         sc.nextLine();
