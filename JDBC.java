@@ -17,6 +17,64 @@ public class JDBC {
         Scanner sc = new Scanner(System.in);
         System.out.println("Bienvenue dans l'application de gestion des utilisateurs !");
         System.out.println("");
+        System.out.println("Que voulez vous faire  ? :");
+        System.out.println("1 - Se connecter :");
+        System.out.println("2 - S'inscrire :");
+        sc.nextInt();
+        String choix2: sc.nextLine();
+
+        if (sc.next line().equals("1")) {
+            System.out.println("Veuillez saisir votre email :");
+            String userEmail = sc.nextLine();
+            System.out.println("Veuillez saisir votre mot de passe :");
+            String userMdp = sc.nextLine();
+
+            String requeteSelect = "SELECT * FROM Utilisateur WHERE email = ? AND mdp = ?";
+            PreparedStatement requetePrepareSelect = maConnection.prepareStatement(requeteSelect);
+            requetePrepareSelect.setString(1, userEmail);
+            requetePrepareSelect.setString(2, userMdp);
+            ResultSet resultat = requetePrepareSelect.executeQuery();
+
+            if (resultat.next()) {
+                System.out.println("Vous êtes connecté en tant qu'utilisateur");
+                System.out.println("");
+                System.out.println("Bienvenue sur le site. ");
+            } else {
+                System.out.println("L'utilisateur n'existe pas");
+            }
+        } else if (sc.next line().equals("2")) {
+            System.out.println("Veuillez saisir votre nom :");
+            String nom = sc.nextLine();
+            System.out.println("Veuillez saisir votre prénom :");
+            String prenom = sc.nextLine();
+            System.out.println("Veuillez saisir votre metier :");
+            String metier = sc.nextLine();
+            System.out.println("Veuillez saisir votre email :");
+            String email = sc.nextLine();
+            System.out.println("Veuillez saisir votre mot de passe :");
+            String mdp = sc.nextLine();
+
+            String requeteInsert = "INSERT INTO Utilisateur (nom, prenom, metier, email, mdp, actif) VALUES (?, ?, ?, ?, ?, ?)";
+            PreparedStatement requetePrepareInsert = maConnection.prepareStatement(requeteInsert, PreparedStatement.RETURN_GENERATED_KEYS);
+
+            requetePrepareInsert.setString(1, nom);
+            requetePrepareInsert.setString(2, prenom);
+            requetePrepareInsert.setString(3, metier);
+            requetePrepareInsert.setString(4, email);
+            requetePrepareInsert.setString(5, mdp);
+            requetePrepareInsert.setBoolean(6, true);
+
+            requetePrepareInsert.executeUpdate();
+            ResultSet generatedKeys = requetePrepareInsert.getGeneratedKeys();
+
+            if (generatedKeys.next()) {
+                System.out.println("L'utilisateur a bien été ajouté avec l'id : " + generatedKeys.getInt(1));
+                System.out.println("");
+            } else {
+                System.out.println("L'utilisateur n'a pas été ajouté");
+            }
+            
+        
         System.out.println("Veuillez vous connecter : (Utilisateur/Administrateur)");
         System.out.println("Veuillez saisir votre email :");
         String userEmail = sc.nextLine();
