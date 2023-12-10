@@ -5,7 +5,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Scanner;
 
-public class jdbcex {
+public class JDBCEXO {
     public static void main(String[] args) throws SQLException {
         Connection maConnection = DriverManager.getConnection(
                 "jdbc:mysql://localhost:3306/erwan", "root", "");
@@ -31,59 +31,44 @@ public class jdbcex {
                     System.out.println("Veuillez saisir votre mot de passe :");
                     String userMdp = sc.nextLine();
 
-                     String requeteSelect = "SELECT * FROM utilisateur WHERE email = ? AND mdp = ?";
-                    PreparedStatement requetePrepareSelect = maConnection.prepareStatement(requeteSelect);
-                    requetePrepareSelect.setString(1, userEmail);
-                    requetePrepareSelect.setString(2, userMdp);
-                    ResultSet resultat = requetePrepareSelect.executeQuery();
+                    String requeteSelect = "SELECT * FROM utilisateur WHERE email = ? AND mdp = ?";
+                    try (PreparedStatement requetePrepareSelect = maConnection.prepareStatement(requeteSelect)) {
+                        requetePrepareSelect.setString(1, userEmail);
+                        requetePrepareSelect.setString(2, userMdp);
+                        ResultSet resultat = requetePrepareSelect.executeQuery();
 
-                    EnregistrementUser(userEmail, userMdp, maConnection);
-
-                    System.out.println("Connection réussie !");
-                    if (userEmail.equals("admin") && userMdp.equals("admin")) {
-                        System.out.println("Vous etes connecté en tant qu'administrateur");
-                        System.out.println("");
-                        adminMenu(sc, maConnection);
-                    } else {
-                        System.out.println("Vous etes connecté en tant qu'utilisateur");
-                        System.out.println("");
-                        System.out.println("Bienvenue sur le site, faites comme chez vous !");
-                        System.out.println("");
+                        if (resultat.next()) {
+                            System.out.println("Connection réussie !");
+                            if (userEmail.equals("admin") && userMdp.equals("admin")) {
+                                System.out.println("Vous êtes connecté en tant qu'administrateur");
+                                adminMenu(sc, maConnection);
+                            } else {
+                                System.out.println("Vous êtes connecté en tant qu'utilisateur");
+                                System.out.println("Bienvenue sur le site, faites comme chez vous !");
+                            }
+                        } else {
+                            System.out.println("Email ou mot de passe incorrect.");
+                        }
                     }
                     break;
 
                 case 2:
-                    // S'inscrire'
+                    // S'inscrire
                     System.out.println("Veuillez saisir votre nom :");
                     String nom = sc.nextLine();
                     System.out.println("Veuillez saisir votre prénom :");
                     String prenom = sc.nextLine();
-                    System.out.println("Veuillez saisir votre metier :");
+                    System.out.println("Veuillez saisir votre métier :");
                     String metier = sc.nextLine();
                     System.out.println("Veuillez saisir votre email :");
                     String email = sc.nextLine();
                     System.out.println("Veuillez saisir votre mot de passe :");
                     String mdp = sc.nextLine();
-        
-                    String requeteInsert = "INSERT INTO Utilisateur (nom, prenom, metier, email, mdp, actif) VALUES (?, ?, ?, ?, ?, ?)";
-                    PreparedStatement requetePrepareInsert = maConnection.prepareStatement(requeteInsert, PreparedStatement.RETURN_GENERATED_KEYS);
-        
-                    requetePrepareInsert.setString(1, nom);
-                    requetePrepareInsert.setString(2, prenom);
-                    requetePrepareInsert.setString(3, metier);
-                    requetePrepareInsert.setString(4, email);
-                    requetePrepareInsert.setString(5, mdp);
-                    requetePrepareInsert.setBoolean(6, true);
-        
-                    requetePrepareInsert.executeUpdate();
-                    ResultSet generatedKeys = requetePrepareInsert.getGeneratedKeys();
-        
-                    if (generatedKeys.next()) {
-                        System.out.println("L'utilisateur a bien été ajouté avec l'id : " + generatedKeys.getInt(1));
-                        System.out.println("");
-                    } else {
-                        System.out.println("L'utilisateur n'a pas été ajouté");
-                    }
+                    enregistrementUser(nom, prenom, metier, email, mdp, maConnection);
+                    System.out.println("Vous êtes bien inscrit !");
+                    System.out.println("Vous pouvez maintenant vous connecter !");
+
+                    break;
 
                 default:
                     System.out.println("Choix non valide, veuillez entrer 1 ou 2.");
@@ -98,15 +83,26 @@ public class jdbcex {
         }
     }
 
-    private static void EnregistrementUser(String email, String mdp, Connection maConnection) throws SQLException {
-        String requeteInsert = "INSERT INTO Utilisateur (email, mdp, actif) VALUES (?, ?, ?)";
-        PreparedStatement requetePrepareInsert = maConnection.prepareStatement(requeteInsert);
+    private static void enregistrementUser(String nom, String prenom, String metier, String email, String mdp, Connection maConnection) throws SQLException {
+        String requeteInsert = "INSERT INTO Utilisateur (nom, prenom, metier, email, mdp, actif) VALUES (?, ?, ?, ?, ?, ?)";
+        try (PreparedStatement requetePrepareInsert = maConnection.prepareStatement(requeteInsert, PreparedStatement.RETURN_GENERATED_KEYS)) {
+            requetePrepareInsert.setString(1, nom);
+            requetePrepareInsert.setString(2, prenom);
+            requetePrepareInsert.setString(3, metier);
+            requetePrepareInsert.setString(4, email);
+            requetePrepareInsert.setString(5, mdp);
+            requetePrepareInsert.setBoolean(6, true);
 
-        requetePrepareInsert.setString(1, email);
-        requetePrepareInsert.setString(2, mdp);
-        requetePrepareInsert.setBoolean(3, true);
-
-        requetePrepareInsert.executeUpdate();
+            requetePrepareInsert.executeUpdate();
+            try (ResultSet generatedKeys = requetePrepareInsert.getGeneratedKeys()) {
+                if (generatedKeys.next()) {
+                    System.out.println("L'utilisateur a bien été ajouté avec l'id : " + generatedKeys.getInt(1));
+                    System.out.println("");
+                } else {
+                    System.out.println("L'utilisateur n'a pas été ajouté");
+                }
+            }
+        }
     }
 
     private static void adminMenu(Scanner sc, Connection maConnection) throws SQLException {
@@ -374,4 +370,5 @@ public class jdbcex {
             System.out.println("");
         }
     }
-    }
+}
+
